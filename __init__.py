@@ -8,3 +8,5 @@ from .ps_calc                     import *
 from .energies                    import *
 from .JE_calc                     import *
 from .plot                        import *
+from .interpolate                 import *
+from .xarray                      import *

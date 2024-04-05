@@ -50,13 +50,13 @@ def JE_calc(dirs, save = True):
 
 
     row = pd.DataFrame(
-          {'JE': [np.average(JE) ],
-           'Jx': [np.average(jx0)],
-           'Jy': [np.average(jy0)],
-           'Jz': [np.average(jz0)],
-           'Ex': [np.average(ex) ],
-           'Ey': [np.average(ey) ],
-           'Ez': [np.average(ez) ]})
+          {'JE': [np.mean(JE ,dtype = np.float64) ],
+           'Jx': [np.mean(jx0,dtype = np.float64)],
+           'Jy': [np.mean(jy0,dtype = np.float64)],
+           'Jz': [np.mean(jz0,dtype = np.float64)],
+           'Ex': [np.mean(ex ,dtype = np.float64) ],
+           'Ey': [np.mean(ey ,dtype = np.float64) ],
+           'Ez': [np.mean(ez ,dtype = np.float64) ]})
 
     ds = pd.concat([ds, row], ignore_index = True)
     # Jx_av[t] = np.average(jx0)

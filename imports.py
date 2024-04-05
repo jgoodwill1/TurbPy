@@ -20,3 +20,4 @@ import sunpy as sun
 import numpy.fft as nf
 import matplotlib.animation as animation
 from matplotlib.ticker import AutoMinorLocator
+import xarray as xr

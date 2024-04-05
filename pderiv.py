@@ -24,3 +24,8 @@ def pderiv(ar,dx=1.,ax=0,order=2,smth=None):
       dar = (np.roll(ar,-1,axis=ax)-np.roll(ar,1,axis=ax))/(2*dx)
    
    return dar 
+
+def pcurl(arx,ary,arz,dx=1,dy=1,dz=1,smth=None):
+   return pderiv(arz,dx=dy,ax=1,smth=smth),\
+          pderiv(arz,dx=dx,ax=0,smth=smth),\
+          pderiv(ary,dx=dx,ax=0,smth=smth)-pderiv(arx,dx=dy,ax=1,smth=smth)

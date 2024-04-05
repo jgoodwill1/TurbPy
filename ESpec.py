@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.fft as nf
 
-def EnSpec2D(dbx, dby, kf = np.inf, numbins = 1, lx = 2 * np.pi, ly = 2 * np.pi):
+def EnSpec2D(dbx, dby, dbz, kf = np.inf, numbins = 1, lx = 2 * np.pi, ly = 2 * np.pi):
     '''
     Calculation of omnidirectional magnetic/velocity energy spectrum using
 
@@ -28,6 +28,10 @@ def EnSpec2D(dbx, dby, kf = np.inf, numbins = 1, lx = 2 * np.pi, ly = 2 * np.pi)
     fdby = np.abs(fdby)**2/2
     fdby = fdby.flatten()
 
+    fdbz = np.fft.fftshift(np.fft.fftn(dbz))/(nx * ny)
+    fdbz = np.abs(fdbz)**2/2
+    fdbz = fdbz.flatten()
+
     kfreqx = nf.fftshift(nf.fftfreq(nx))* 2 * np.pi * (nx/lx)
     kfreqy = nf.fftshift(nf.fftfreq(ny))* 2 * np.pi * (ny/ly)
     kfreq2D = np.meshgrid(kfreqx, kfreqy) 
@@ -38,10 +42,14 @@ def EnSpec2D(dbx, dby, kf = np.inf, numbins = 1, lx = 2 * np.pi, ly = 2 * np.pi)
     knrm_sort = knrm[sort_ind]
     fdbx_sort = fdbx[sort_ind]
     fdby_sort = fdby[sort_ind]
-
-    kbins = np.linspace(0, knrm_sort[-1], numbins)
+    fdbz_sort = fdbz[sort_ind]
+    kmin = np.sqrt((2 * np.pi/lx)**2 + (2 * np.pi/ly)**2)
+    print(knrm_sort[0])
+    print(knrm_sort[-1])
+    kbins = np.linspace(kmin, knrm_sort[-1], numbins)
     fdbx_sum = np.zeros(len(kbins))
     fdby_sum = np.zeros(len(kbins))
+    fdbz_sum = np.zeros(len(kbins))
     k_len = int(len(knrm_sort))
     kbin_len = int(len(kbins))
     iter = int(k_len/kbin_len)
@@ -49,10 +57,13 @@ def EnSpec2D(dbx, dby, kf = np.inf, numbins = 1, lx = 2 * np.pi, ly = 2 * np.pi)
         if kbins[i] < kf:
             fdbx_sum[i] =np.sum(fdbx_sort[i * iter: (i+1)*iter])
             fdby_sum[i] =np.sum(fdby_sort[i * iter: (i+1)*iter])
+            fdbz_sum[i] =np.sum(fdbz_sort[i * iter: (i+1)*iter])
         else :
             fdbx_sum[i] = 0
             fdby_sum[i] = 0
-    En = fdbx_sum + fdby_sum
+            fdbz_sum[i] = 0
+    En = fdbx_sum + fdby_sum 
+    # + fdbz_sum
     return kbins,  En
 
 def EbSpec2D(dbx, dby):
