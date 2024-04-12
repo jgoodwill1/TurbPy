@@ -84,4 +84,25 @@ def load_hydro(dirs, time_step, species = 'electron'):
         dset.read_direct(jvec[i+str(time_step)])
         var_dict[i] = np.array(dset[:,:,0])
     return (var_dict)
+
+def load_field_fil(dirs, time_step):
+    # hydro_file = h5py.File(dirs+"filter_hdf5/T."+str(time_step)+ "/" + species + "_"+str(time_step)+".h5", 'r')
+    field_file = h5py.File(dirs+"filter_hdf5/T."+str(time_step)+"/fields_" + str(time_step)+".h5", 'r')
+    var_dict = {}
+    field_vars = ['cbx', 'cby', 'cbz', 'ex', 'ey', 'ez']
+    # hydro_vars = ['jx', 'jy', 'jz', 'px', 'py', 'pz', 'txx', 'tyy', 'tzz', 'txy', 'tzx', 'tyz', 'rho']
+    for i in field_vars:
+        dset = field_file[i]
+        var_dict[i] = np.array(dset[:,:])
+    return (var_dict)
+
+def load_hydro_fil(dirs, time_step, species = 'electron'):
+    hydro_file = h5py.File(dirs+"filter_hdf5/T."+str(time_step)+ "/" + species + "_"+str(time_step)+".h5", 'r')
+    # field_file = h5py.File(dirs+"filter_hdf5/T."+str(time_step)+"/fields_" + str(time_step)+".h5", 'r')
+    var_dict = {}
+    hydro_vars = ['jx', 'jy', 'jz', 'px', 'py', 'pz', 'txx', 'tyy', 'tzz', 'txy', 'tzx', 'tyz', 'rho']
+    for i in hydro_vars:
+        dset = hydro_file[i]
+        var_dict[i] = np.array(dset[:,:])
+    return (var_dict)
     

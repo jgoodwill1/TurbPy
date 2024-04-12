@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 def ps_calc(dirs, timestep, species, kfilt = None, norm = False):
-    ds = load_vars(dirs,timestep,species)
+    ds = load_hydro_fil(dirs,timestep,species)
     vpic_info = get_vpic_info(dirs)
 
     dx = vpic_info['dx/de']
@@ -30,7 +30,7 @@ def ps_calc(dirs, timestep, species, kfilt = None, norm = False):
     # pxy = np.array(ds['txy'] - ()*ds['py'])
     pxx = ds['txx'] - ux*ds['px']; pyy = ds['tyy'] - uy*ds['py']; pzz = ds['tzz'] - uz*ds['pz']
     pxy = ds['txy'] - ux*ds['py']; pxz = ds['tzx'] - ux*ds['pz']; pyz = ds['tyz'] - uy*ds['pz']
-    pyx = ds['txy'] - uy*ds['px']; pzx = ds['tzx'] - uz*ds['px']; pzy = ds['tyz'] - uz*ds['py']
+    # pyx = ds['txy'] - uy*ds['px']; pzx = ds['tzx'] - uz*ds['px']; pzy = ds['tyz'] - uz*ds['py']
     # pyx = np.array(txy - (jy/rho)*px)
     # pxz = np.array(ds['tzx'] - (ds['jx']/ds['rho'])*ds['pz'])
     # pzx = np.array(tzx - (jz/rho)*px)

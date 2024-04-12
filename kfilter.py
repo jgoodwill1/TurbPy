@@ -10,4 +10,4 @@ def kfilter(ar,kf , lx = 2 * np.pi, ly = 2 * np.pi):
    far = nf.fftshift(nf.fftn(ar))
    far = (np.sign(km - kf) - 1.)/(-2.)*far
    arf = np.real(nf.ifftn(nf.ifftshift(far)))
-   return kx, ky, arf
+   return arf
