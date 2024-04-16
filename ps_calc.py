@@ -5,8 +5,11 @@ from .load_vars import*
 import numpy as np
 import pandas as pd
 
-def ps_calc(dirs, timestep, species, kfilt = None, norm = False):
-    ds = load_hydro_fil(dirs,timestep,species)
+def ps_calc(dirs, timestep, species, kfilt = True, norm = False):
+    if kfilt == True:
+      ds = load_hydro_fil(dirs,timestep,species)
+    else:
+      ds = load_hydro(dirs,timestep,species)
     vpic_info = get_vpic_info(dirs)
 
     dx = vpic_info['dx/de']
