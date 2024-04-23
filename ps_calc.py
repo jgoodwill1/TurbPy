@@ -8,7 +8,7 @@ import pandas as pd
 def ps_calc(dirs, timestep, species, kfilt = True, norm = False):
     if kfilt == True:
       ds = load_hydro_fil(dirs,timestep,species)
-    else:
+    if kfilt == False:
       ds = load_hydro(dirs,timestep,species)
     vpic_info = get_vpic_info(dirs)
 
@@ -118,7 +118,7 @@ def ps_av(dirs, sp = 'electron', n = False, save = True):
   pid_av = np.zeros(len(times))
   pth_av = np.zeros(len(times))
   for t in np.arange(len(times)):
-    pth, pid = ps_calc(dirs, times[t], sp , norm = False)
+    pth, pid = ps_calc(dirs, times[t], sp , kfilt = True, norm = False)
     ps = pth + pid
     pid_av[t] = np.average(pid)
     pth_av[t] = np.average(pth)

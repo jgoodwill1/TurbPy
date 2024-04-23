@@ -107,5 +107,5 @@ def EbSpec2D(dbx, dby, dbz, lx = 2 * np.pi, ly = 2 * np.pi):
             fdbx_av[k] = np.sum(fdbx_in)
             fdby_av[k] = np.sum(fdby_in)
             fdbz_av[k] = np.sum(fdbz_in)
-        fdb_av = fdbx_av + fdby_av
+        fdb_av = fdbx_av + fdby_av + fdbz_av
     return kbins, fdb_av

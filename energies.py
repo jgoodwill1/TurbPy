@@ -39,7 +39,7 @@ def read_calc_energies(dirs):
   return pd.DataFrame(en_dict)
 
 
-def en_calc(dirs, save = True):
+def en_calc(dirs, filt = True,  save = True):
   vpic_info = get_vpic_info(dirs)
   times = get_times(dirs)
   en = {}
@@ -55,34 +55,82 @@ def en_calc(dirs, save = True):
     dx = vpic_info['dx/de']
     dy = vpic_info['dy/de']
     dz = vpic_info['dz/de']
-    ds = load_vars(dirs,times[t], 'ion')
-    E_m[t] = (1/2) * np.sum(ds['cbx']**2 + ds['cby']**2 + ds['cbz']**2) * dx * dy *dz
-    E_e[t] = (1/2) * np.sum(ds['ex']**2 + ds['ey']**2 + ds['ez']**2) * dx * dy * dz
 
-    particle_mass = int(vpic_info['mi/me'])
-    pxx = np.array(ds['txx'] - (ds['jx']/ds['rho'])*ds['px'])
-    pyy = np.array(ds['tyy'] - (ds['jy']/ds['rho'])*ds['py'])
-    pzz = np.array(ds['tzz'] - (ds['jz']/ds['rho'])*ds['pz'])
-    
-    ux=ds['jx']/ds['rho']
-    uy=ds['jy']/ds['rho']
-    uz=ds['jz']/ds['rho']
+    if filt == False:
+      ds = load_hydro(dirs,times[t], 'ion')
+      f = load_fields(dirs,times[t])
+      E_m[t] = (1/2) * np.sum(f['cbx']**2 + f['cby']**2 + f['cbz']**2) * dx * dy *dz
+      E_e[t] = (1/2) * np.sum(f['ex']**2 + f['ey']**2 + f['ez']**2) * dx * dy * dz
 
-    E_thi[t] = (1/2) * np.sum(pxx + pyy + pzz) * dx * dy * dz
-    E_fi[t]  = (1/2) * particle_mass  * np.sum( np.abs(ds['rho']) * (ux**2 + uy**2 + uz**2)) * dx * dy * dz
+      particle_mass = int(vpic_info['mi/me'])
+      ux=ds['jx']/ds['rho']
+      uy=ds['jy']/ds['rho']
+      uz=ds['jz']/ds['rho']
 
-    ds = load_vars(dirs,times[t], 'electron')
-    particle_mass = 1
-    pxx = np.array(ds['txx'] - (ds['jx']/ds['rho'])*ds['px'])
-    pyy = np.array(ds['tyy'] - (ds['jy']/ds['rho'])*ds['py'])
-    pzz = np.array(ds['tzz'] - (ds['jz']/ds['rho'])*ds['pz'])
-    
-    ux=ds['jx']/ds['rho']
-    uy=ds['jy']/ds['rho']
-    uz=ds['jz']/ds['rho']
+      pxx = np.array(ds['txx'] - (ux)*ds['px'])
+      pyy = np.array(ds['tyy'] - (uy)*ds['py'])
+      pzz = np.array(ds['tzz'] - (uz)*ds['pz'])
+      # ux=ds['px']/np.abs(ds['rho'])/particle_mass
+      # uy=ds['py']/np.abs(ds['rho'])/particle_mass
+      # uz=ds['pz']/np.abs(ds['rho'])/particle_mass
 
-    E_the[t] = (1/2) * np.sum(pxx + pyy + pzz) * dx * dy * dz
-    E_fe[t]  = (1/2) * particle_mass  * np.sum( np.abs(ds['rho']) * (ux**2 + uy**2 + uz**2)) * dx * dy * dz
+      E_thi[t] = (1/2) * np.sum(pxx + pyy + pzz) * dx * dy * dz
+      E_fi[t]  = (1/2) * particle_mass  * np.sum( np.abs(ds['rho']) * (ux**2 + uy**2 + uz**2)) * dx * dy * dz
+
+      ds = load_hydro(dirs,times[t], 'electron')
+      particle_mass = 1
+      ux=ds['jx']/ds['rho']
+      uy=ds['jy']/ds['rho']
+      uz=ds['jz']/ds['rho']
+
+      pxx = np.array(ds['txx'] - (ux)*ds['px'])
+      pyy = np.array(ds['tyy'] - (uy)*ds['py'])
+      pzz = np.array(ds['tzz'] - (uz)*ds['pz'])
+      # ux=ds['px']/np.abs(ds['rho'])/particle_mass
+      # uy=ds['py']/np.abs(ds['rho'])/particle_mass
+      # uz=ds['pz']/np.abs(ds['rho'])/particle_mass
+
+      E_the[t] = (1/2) * np.sum(pxx + pyy + pzz) * dx * dy * dz
+      E_fe[t]  = (1/2) * particle_mass  * np.sum( np.abs(ds['rho']) * (ux**2 + uy**2 + uz**2)) * dx * dy * dz
+    if filt == True:
+      ds = load_hydro_fil(dirs,times[t], 'ion')
+      f = load_field_fil(dirs,times[t])
+      E_m[t] = (1/2) * np.sum(f['cbx']**2 + f['cby']**2 + f['cbz']**2) * dx * dy *dz
+      E_e[t] = (1/2) * np.sum(f['ex']**2 + f['ey']**2 + f['ez']**2) * dx * dy * dz
+
+      particle_mass = int(vpic_info['mi/me'])
+      ux=ds['jx']/ds['rho']
+      uy=ds['jy']/ds['rho']
+      uz=ds['jz']/ds['rho']
+
+      pxx = np.array(ds['txx'] - (ux)*ds['px'])
+      pyy = np.array(ds['tyy'] - (uy)*ds['py'])
+      pzz = np.array(ds['tzz'] - (uz)*ds['pz'])
+      # ux=ds['px']/np.abs(ds['rho'])/particle_mass
+      # uy=ds['py']/np.abs(ds['rho'])/particle_mass
+      # uz=ds['pz']/np.abs(ds['rho'])/particle_mass
+
+      E_thi[t] = (1/2) * np.sum(pxx + pyy + pzz) * dx * dy * dz
+      E_fi[t]  = (1/2) * particle_mass  * np.sum( np.abs(ds['rho']) * (ux**2 + uy**2 + uz**2)) * dx * dy * dz
+
+      ds = load_hydro_fil(dirs,times[t], 'electron')
+      particle_mass = 1
+
+      ux=ds['jx']/ds['rho']
+      uy=ds['jy']/ds['rho']
+      uz=ds['jz']/ds['rho']
+
+      pxx = np.array(ds['txx'] - (ux)*ds['px'])
+      pyy = np.array(ds['tyy'] - (uy)*ds['py'])
+      pzz = np.array(ds['tzz'] - (uz)*ds['pz'])
+      
+
+      # ux=ds['px']/np.abs(ds['rho'])/particle_mass
+      # uy=ds['py']/np.abs(ds['rho'])/particle_mass
+      # uz=ds['pz']/np.abs(ds['rho'])/particle_mass
+
+      E_the[t] = (1/2) * np.sum(pxx + pyy + pzz) * dx * dy * dz
+      E_fe[t]  = (1/2) * particle_mass  * np.sum( np.abs(ds['rho']) * (ux**2 + uy**2 + uz**2)) * dx * dy * dz
 
   en['EM'] = E_m
   en['EE'] = E_e
@@ -92,7 +140,10 @@ def en_calc(dirs, save = True):
   en['Efe'] = E_fe
   en['Et'] = E_m + E_e + E_thi + E_fi + E_the + E_fe
   if save == True:
-    pd.DataFrame(en).to_csv(dirs + 'en_calc.csv', sep = ',')
+    if filt == True:
+      pd.DataFrame(en).to_csv(dirs + 'en_calc_fil.csv', sep = ',')
+    else:
+      pd.DataFrame(en).to_csv(dirs + 'en_calc.csv', sep = ',')
   return pd.DataFrame(en)
 
 def EM_calc(dirs):

@@ -3,7 +3,7 @@ from .load_vars import *
 import numpy as np
 import pandas as pd
 
-def JE_calc(dirs, save = True):
+def JE_calc(dirs, filt = True, save = True):
   vpic_info = get_vpic_info(dirs)
   times = get_times(dirs)
 
@@ -26,27 +26,37 @@ def JE_calc(dirs, save = True):
   # E_m = np.zeros(len(times))
 
   for t in np.arange(0,len(times)):
-    sp = 'electron'
-    jxe = load_var('jx', dirs, times[t], sp)
-    jye = load_var('jy', dirs, times[t], sp)
-    jze = load_var('jz', dirs, times[t], sp)
+    if filt == False:
+      sp = 'electron'
+      jxe = load_var('jx', dirs, times[t], sp)
+      jye = load_var('jy', dirs, times[t], sp)
+      jze = load_var('jz', dirs, times[t], sp)
 
-    sp = 'ion'
-    jxi = load_var('jx', dirs, times[t], sp)
-    jyi = load_var('jy', dirs, times[t], sp)
-    jzi = load_var('jz', dirs, times[t], sp)
+      sp = 'ion'
+      jxi = load_var('jx', dirs, times[t], sp)
+      jyi = load_var('jy', dirs, times[t], sp)
+      jzi = load_var('jz', dirs, times[t], sp)
 
-    jx0 = jxe + jxi
-    jy0 = jye + jyi 
-    jz0 = jze + jzi
+      jx0 = jxe + jxi
+      jy0 = jye + jyi 
+      jz0 = jze + jzi
 
-    ex = load_var('ex', dirs, times[t])
-    ey = load_var('ey', dirs, times[t])
-    ez = load_var('ez', dirs, times[t])
+      ex = load_var('ex', dirs, times[t])
+      ey = load_var('ey', dirs, times[t])
+      ez = load_var('ez', dirs, times[t])
 
-    jeE = (jxe * ex) + (jye * ey) + (jze * ez)
-    jiE = (jxi * ex) + (jyi * ey) + (jzi * ez)
-    JE  = (jx0 * ex) + (jy0 * ey) + (jz0 * ez)
+      jeE = (jxe * ex) + (jye * ey) + (jze * ez)
+      jiE = (jxi * ex) + (jyi * ey) + (jzi * ez)
+      JE  = (jx0 * ex) + (jy0 * ey) + (jz0 * ez)
+    if filt == True:
+      el = load_hydro_fil(dirs, times[t], species = 'electron')
+      ion = load_hydro_fil(dirs, times[t], species = 'ion')
+      f = load_field_fil(dirs, times[t])
+
+      jx0 = el['jx'] + ion['jx']
+      jy0 = el['jy'] + ion['jy']
+      jz0 = el['jz'] + ion['jz']
+      JE  = (jx0 * f['ex']) + (jy0 * f['ey']) + (jz0 * f['ez'])
 
 
     row = pd.DataFrame(
