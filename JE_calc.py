@@ -2,8 +2,49 @@ from .vpic_info import *
 from .load_vars import *
 import numpy as np
 import pandas as pd
+import xarray as xar
 
-def JE_calc(dirs, filt = True, save = True):
+def JE_calc(dirs, t, filt = True, save = True):
+  vpic_info = get_vpic_info(dirs)
+  times = get_times(dirs)
+
+  dx = vpic_info['dx/de']
+  if filt == False:
+    sp = 'electron'
+    jxe = load_var('jx', dirs, t, sp)
+    jye = load_var('jy', dirs, t, sp)
+    jze = load_var('jz', dirs, t, sp)
+
+    sp = 'ion'
+    jxi = load_var('jx', dirs, t, sp)
+    jyi = load_var('jy', dirs, t, sp)
+    jzi = load_var('jz', dirs, t, sp)
+
+    jx0 = jxe + jxi
+    jy0 = jye + jyi 
+    jz0 = jze + jzi
+
+    ex = load_var('ex', dirs, t)
+    ey = load_var('ey', dirs, t)
+    ez = load_var('ez', dirs, t)
+
+    jeE = (jxe * ex) + (jye * ey) + (jze * ez)
+    jiE = (jxi * ex) + (jyi * ey) + (jzi * ez)
+    JE  = (jx0 * ex) + (jy0 * ey) + (jz0 * ez)
+  if filt == True:
+    el = load_hydro_fil(dirs, t, species = 'electron')
+    ion = load_hydro_fil(dirs, t, species = 'ion')
+    f = load_field_fil(dirs, t)
+
+    jx0 = el['jx'] + ion['jx']
+    jy0 = el['jy'] + ion['jy']
+    jz0 = el['jz'] + ion['jz']
+    JiE = (ion['jx'] * f['ex']) + (ion['jy'] * f['ey']) + (ion['jz'] * f['ez'])
+    JeE = (el['jx'] * f['ex']) + (el['jy'] * f['ey']) + (el['jz'] * f['ez'])
+    JE  = (jx0 * f['ex']) + (jy0 * f['ey']) + (jz0 * f['ez'])
+  return JiE, JeE, JE
+
+def JE_av(dirs, filt = True, save = True):
   vpic_info = get_vpic_info(dirs)
   times = get_times(dirs)
 
@@ -11,12 +52,8 @@ def JE_calc(dirs, filt = True, save = True):
   
   
   ds = pd.DataFrame({'JE': [],
-                     'Jx': [],
-                     'Jy': [],
-                     'Jz': [],
-                     'Ex': [],
-                     'Ey': [],
-                     'Ez': []}
+                     'JiE': [],
+                     'JeE': []}
                      )
   # J_av = np.zeros(len(times))
   # E_av = np.zeros(len(times))
@@ -56,17 +93,16 @@ def JE_calc(dirs, filt = True, save = True):
       jx0 = el['jx'] + ion['jx']
       jy0 = el['jy'] + ion['jy']
       jz0 = el['jz'] + ion['jz']
+      JiE = (ion['jx'] * f['ex']) + (ion['jy'] * f['ey']) + (ion['jz'] * f['ez'])
+      JeE = (el['jx'] * f['ex']) + (el['jy'] * f['ey']) + (el['jz'] * f['ez'])
       JE  = (jx0 * f['ex']) + (jy0 * f['ey']) + (jz0 * f['ez'])
 
 
     row = pd.DataFrame(
           {'JE': [np.mean(JE ,dtype = np.float64) ],
-           'Jx': [np.mean(jx0,dtype = np.float64)],
-           'Jy': [np.mean(jy0,dtype = np.float64)],
-           'Jz': [np.mean(jz0,dtype = np.float64)],
-           'Ex': [np.mean(ex ,dtype = np.float64) ],
-           'Ey': [np.mean(ey ,dtype = np.float64) ],
-           'Ez': [np.mean(ez ,dtype = np.float64) ]})
+           'JiE': [np.mean(JiE,dtype = np.float64)],
+           'JeE': [np.mean(JeE,dtype = np.float64)],
+           })
 
     ds = pd.concat([ds, row], ignore_index = True)
     # Jx_av[t] = np.average(jx0)
