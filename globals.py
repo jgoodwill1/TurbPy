@@ -12,7 +12,7 @@ def globals(dirs):
   db_t = np.array([])
   ome_t = np.array([])
   omi_t = np.array([])
-  for t in np.arange(len(times)):
+  for t in np.arange(0,len(times)):
     dse = load_vars(dirs, times[t], species = 'electron')
     dsi = load_vars(dirs, times[t], species = 'ion')
     jx = (dse['jx'] + dsi['jx'])
@@ -33,7 +33,7 @@ def globals(dirs):
                   dz = info['dz/de'])
     omi = pcurl(dsi['jx']/dsi['rho'],
                   dsi['jy']/dsi['rho'], 
-                  dse['jz']/dsi['rho'], 
+                  dsi['jz']/dsi['rho'], 
                   dx = info['dx/de'], 
                   dy = info['dy/de'], 
                   dz = info['dz/de'])
@@ -46,4 +46,5 @@ def globals(dirs):
                       'db': db_t,
                       'ome': ome_t,
                       'omi': omi_t})
+    df.to_csv(dirs + 'data/' + 'globals.csv')
     return

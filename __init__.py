@@ -10,3 +10,4 @@ from .JE_calc                     import *
 from .plot                        import *
 from .interpolate                 import *
 from .xarray                      import *
+from .globals                     import *
