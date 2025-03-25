@@ -4,7 +4,7 @@ from .kfilter import *
 from .vorticity import *
 from .JE_calc import *
 from .ps_calc import *
-from .imports import *
+from ..imports import *
 
 
 deck = 'KH_200ppc_200wci/'

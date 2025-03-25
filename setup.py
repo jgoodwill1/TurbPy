@@ -3,7 +3,7 @@ from Cython.Build import cythonize
 import numpy
 
 extensions = [
-    Extension("spectrum", ["spectrum.pyx"], include_dirs=[numpy.get_include()],
+    Extension("spectrum", ["src/spectrum.pyx"], include_dirs=[numpy.get_include()],
         extra_compile_args=["-O2"]),
 ]
 
