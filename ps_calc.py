@@ -17,9 +17,9 @@ def ps_calc(dirs, timestep, species, kfilt = True, norm = False):
     mi_me = vpic_info['mi/me']
 
 
-    ux = ds['jx']/ds['rho']
-    uy = ds['jy']/ds['rho']
-    uz = ds['jz']/ds['rho']
+    ux = (ds['jx']/ds['rho'])
+    uy = (ds['jy']/ds['rho'])
+    uz = (ds['jz']/ds['rho'])
 
     # pxx = np.array(ds['txx'] - (ds['jx']/ds['rho'])*ds['px'])
     # pyy = np.array(ds['tyy'] - (ds['jy']/ds['rho'])*ds['py'])
@@ -31,8 +31,26 @@ def ps_calc(dirs, timestep, species, kfilt = True, norm = False):
     # pyy = np.array(ds['tyy'] - uy*ds['py'])
     # pzz = np.array(ds['tzz'] - uz*ds['pz'])
     # pxy = np.array(ds['txy'] - ()*ds['py'])
-    pxx = ds['txx'] - ux*ds['px']; pyy = ds['tyy'] - uy*ds['py']; pzz = ds['tzz'] - uz*ds['pz']
-    pxy = ds['txy'] - ux*ds['py']; pxz = ds['tzx'] - ux*ds['pz']; pyz = ds['tyz'] - uy*ds['pz']
+
+    pxx = (ds['txx'] - ux*ds['px'])[100:1180,:]
+    pyy = (ds['tyy'] - uy*ds['py'])[100:1180,:]
+    pzz = (ds['tzz'] - uz*ds['pz'])[100:1180,:]
+    pxy = (ds['txy'] - ux*ds['py'])[100:1180,:]; 
+    pxz = (ds['tzx'] - ux*ds['pz'])[100:1180,:]; 
+    pyz = (ds['tyz'] - uy*ds['pz'])[100:1180,:]
+
+    # pxx = (ds['txx'] - ux*ds['px'])
+    # pyy = (ds['tyy'] - uy*ds['py'])
+    # pzz = (ds['tzz'] - uz*ds['pz'])
+    # pxy = (ds['txy'] - ux*ds['py']); 
+    # pxz = (ds['tzx'] - ux*ds['pz']); 
+    # pyz = (ds['tyz'] - uy*ds['pz'])
+
+
+    ux = (ds['jx']/ds['rho'])[100:1180,:]
+    uy = (ds['jy']/ds['rho'])[100:1180,:]
+    uz = (ds['jz']/ds['rho'])[100:1180,:]
+
     # pyx = ds['txy'] - uy*ds['px']; pzx = ds['tzx'] - uz*ds['px']; pzy = ds['tyz'] - uz*ds['py']
     # pyx = np.array(txy - (jy/rho)*px)
     # pxz = np.array(ds['tzx'] - (ds['jx']/ds['rho'])*ds['pz'])

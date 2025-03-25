@@ -71,17 +71,11 @@ def load_fields(dirs, time_step):
 
 def load_hydro(dirs, time_step, species = 'electron'):
     hydro_file = h5py.File(dirs+"hydro_hdf5/T."+str(time_step)+"/hydro_" + species + "_"+str(time_step)+".h5", 'r')
-
-    jvec={}
     var_dict = {}
-    vars = ['jx', 'jy', 'jz', 'ke', 'px', 'py', 'pz', 
-            'rho', 'txx', 'txy', 'tyy', 'tyz', 'tzx', 'tzz']
-    group=hydro_file['Timestep_'+str(time_step)]
-
-    for i in vars:
-        dset = group[i]
-        jvec[i+str(time_step)] = np.zeros(dset.shape, dtype=dset.dtype)
-        dset.read_direct(jvec[i+str(time_step)])
+    hydro_vars = ['jx', 'jy', 'jz', 'px', 'py', 'pz', 'txx', 'tyy', 'tzz', 'txy', 'tzx', 'tyz', 'rho']
+    for i in hydro_vars:
+        dset = hydro_file['Timestep_'f'{time_step}'][i]
+        
         var_dict[i] = np.array(dset[:,:,0])
     return (var_dict)
 

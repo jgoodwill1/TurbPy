@@ -28,11 +28,13 @@ lyr_de = np.linspace(0, ly_de, ny)
 dx = lx_de/nx
 dy = ly_de/ny
 
-tsnap = [373, 507, 652, 1120]
+tsnap = [510, 657, 1124]
 x = 0
 y = 0
-fig, ax = plt.subplots(4,2, figsize = (10, 10), sharex = 'col', layout = 'tight')
-print(ax.shape)
+fig, ax = plt.subplots(3,2, figsize = (15, 20), sharex = 'col', layout = 'constrained')
+# fig.subplots()
+# subfigs = fig.subfigures(3,2)
+# print(ax.shape)
 for t in tsnap:
   print(twci[t])
   f = tb.load_field_fil(dirs, times[t])
@@ -48,65 +50,135 @@ for t in tsnap:
 
   QJe, QJi, QJ = tb.QJ_calc(dirs, t)
 
+  Qwe = tb.Qw_calc(dirs, t, sp = 'electron')
+  Qwi = tb.Qw_calc(dirs, t, sp = 'ion')
+
   df = pd.DataFrame()
-  emask = np.linspace(0, 6, 50)
+  emask = np.linspace(0, 1.75, 50)
   Jie, JeE, JE = tb.JE_calc(dirs, times[t])
   pthe, pide = tb.ps_calc(dirs, times[t], 'electron')
   pthi, pidi = tb.ps_calc(dirs, times[t], 'ion')
-  QJe_row = []
+ 
+
+  pid_rat = np.average(pidi)/np.average(pide)
+  Qe_row = []
   tsize = 14
   for fn in emask:  
-    # QDe_thres = np.where(QDe > fn)
-    QJe_thres = np.where(QJe > fn)
+    QDe_thres = np.where(QDe > fn)
+    QJe_thres = np.where(QJ > fn)
+    Qwe_thres = np.where(Qwe > fn)
+    
     # JE_QDe =   np.average(JE[QDe_thres])
-    # pidi_QDe = np.average(pidi[QDe_thres])
-    # pide_QDe = np.average(pide[QDe_thres])
+    pide_QDe = np.average(pide[QDe_thres])
+    pidi_QDe = np.average(pidi[QDe_thres])
+    pidi_QDe = pidi_QDe / pid_rat
+    pide_Qwe = np.average(pide[Qwe_thres])
     pidi_QJe = np.average(pidi[QJe_thres])
+    
     pide_QJe = np.average(pide[QJe_thres])
-    QJe_frn = len(QJe_thres[0])
-    QJe_row.append({'QDe': QJe_frn, 'pide_QDe': pide_QJe, 'pidi_QDe': pidi_QJe})
+    QJe_cnt = len(QJe_thres[0])
+    Qwe_cnt = len(Qwe_thres[0])
+    QDe_cnt = len(QDe_thres[0])
+    Qe_row.append({
+      'QJe': QJe_cnt, 
+      'Qwe': Qwe_cnt,
+      'QDe': QDe_cnt,
+      'pide_Qwe': pide_Qwe,
+      'pide_QDe': pide_QDe, 
+      'pidi_QDe': pidi_QDe, 
+      'pide_QJe': pide_QJe, 
+      # 'pidi_QJe': pidi_QJe
+      })
   # df =pd.DataFrame(row)
-  QJi_row = []
-  imask = np.linspace(0, 0.6, 50)
-  for fn in imask:  
-    # QDi_thres = np.where(QDi > fn)
-    QJi_thres = np.where(QJi > fn)
+  Qi_row = []
+  imask = np.linspace(0, 0.020, 50)
+  for ifn in imask:  
+    QDi_thres = np.where(QDi > ifn)
+    QJi_thres = np.where(QJ > ifn)
+    Qwi_thres = np.where(Qwi > ifn)
     # JE_QDi =   np.average(JE[QDi_thres])
-    # pidi_QDi = np.average(pidi[QDi_thres])
-    # pide_QDi = np.average(pide[QDi_thres])
+    pidi_QDi = np.average(pidi[QDi_thres])
+    pidi_Qwi = np.average(pidi[Qwi_thres])
+    pide_QDi = np.average(pide[QDi_thres])
+    pide_QDi = pide_QDi * pid_rat
     pidi_QJi = np.average(pidi[QJi_thres])
-    pide_QJi = np.average(pide[QJi_thres])
-    QJi_frn = len(QJe_thres[0])
-    QJi_row.append({'QDi': QJi_frn, 'pide_QDi': pide_QJi, 'pidi_QDi': pidi_QJi})
-  QDe_cond = pd.DataFrame(QJe_row)
-  QDi_cond = pd.DataFrame(QJi_row)
-  df = pd.concat([QDe_cond, QDi_cond], axis = 1, join = 'inner')
-  # print(df)
-  # ax.semilogy(mask, df['QD']/df['QD'][0], marker = 's', color = 'green', label = 'Area', markersize = 2)
-  # ax[x,y].plot(emask, df['JE_QDe'], marker = '^', color = 'blue', label = r'$\langle J \cdot E | Q_D^e\rangle$', markersize = 4)
-  ax[x,y].plot(emask, df['pide_QDe'], marker = 'o', color = 'purple', label = r'$\langle PiD^e | Q_J^e\rangle$', markersize = 4)
-  ax[x,y].plot(emask, df['pidi_QDe'], marker = 'x', color = 'violet', label = r'$\langle PiD^i | Q_J^e\rangle$', markersize = 4)
+    # pide_QJi = np.average(pide[QJi_thres])
+    QJi_cnt = len(QJi_thres[0])
+    Qwi_cnt = len(Qwi_thres[0])
+    QDi_cnt = len(QDi_thres[0])
+    Qi_row.append({
+      'QJi': QJi_cnt, 
+      'Qwi': Qwi_cnt,
+      'QDi': QDi_cnt,
+      'pide_QDi': pide_QDi, 
+      'pidi_Qwi': pidi_Qwi,
+      'pidi_QDi': pidi_QDi,
+      # 'pide_QJi': pide_QJi, 
+      'pidi_QJi': pidi_QJi
+      })
+  Qe_cond = pd.DataFrame(Qe_row)
+  Qi_cond = pd.DataFrame(Qi_row)
+  df = pd.concat([Qe_cond, Qi_cond], axis = 1, join = 'inner')
+  
+  ax[x,y].plot(emask, df['pide_QDe'], marker = 'o', color = 'purple', label = r'$\langle PiD^e | Q_D^e\rangle$', markersize = 4, linewidth = 3 )
+  ax[x,y].plot(emask, df['pide_Qwe'], marker = 's', color = 'indigo', label = r'$\langle PiD^e | Q_\omega^e\rangle$', markersize = 4, linewidth = 3 )
+  ax[x,y].plot(emask, df['pide_QJe'], marker = 'x', color = 'violet', label = r'$\langle PiD^e | Q_J\rangle$', markersize = 4, linewidth = 3 )
+  # ax[x,y].plot(emask, df['pidi_QDe'], color = 'red', label = r'$\langle PiD^i | Q_D^e\rangle$', markersize = 4, linewidth = 3 )
   ax[x,y].grid(which = 'both')
-  # ax[x,y].text(1, 4,  r'$t \omega_{ci} = $'f'{np.round(twci[t],2)}')
-  ax[x,y].legend('', title = r'$t \omega_{ci} = $'f'{np.round(twci[t],2)}', title_fontsize = tsize, frameon = False, loc = 'upper left')
+  ax[x,y].set_ylim(-5e-7, 1.25e-5)
+  ax[x,y].yaxis.offsetText.set_fontsize(30)
+  
+  ax[x,y].set_xlim(0,1.75)
+  # ax[x,y].set_title(r'$t \omega_{ci} = $'f'{np.round(twci[tsnap[x]],2)}', fontsize = 40)
+  # ax2 = ax[y,x].twinx()
+  # ax2.plot(emask, df['QDe'], linestyle = 'dashed', color = 'black')
+  # ax2.plot(emask, df['Qwe'], linestyle = 'dashed', color = 'gray')
+  # ax2.set_ylabel('Counts')
+  # ax2.set_yscale('log')
   y = 1
-  # ax[x,y].plot(imask, df['JE_QDi'], marker = '^', color = 'red', label = r'$\langle J \cdot E | Q_D^i\rangle$', markersize = 4)
-  ax[x,y].plot(imask, df['pide_QDi'], marker = 'o', color = 'maroon', label = r'$\langle PiD^e | Q_J^i\rangle$', markersize = 4)
-  ax[x,y].plot(imask, df['pidi_QDi'], marker = 'x', color = 'salmon', label = r'$\langle PiD^i | Q_J^i\rangle$', markersize = 4)
-  ax[x,y].legend('', frameon = False, loc = 'upper left')
+  
+  ax[x,y].plot(imask, df['pidi_QDi'], marker = 'o', color = 'red', label = r'$\langle PiD^i | Q_D^i\rangle$', markersize = 4, linewidth = 3 )
+  ax[x,y].plot(imask, df['pidi_Qwi'], marker = 's', color = 'green', label = r'$\langle PiD^i | Q_\omega^i\rangle$', markersize = 4, linewidth = 3 )
+  ax[x,y].plot(imask, df['pidi_QJi'], marker = 'x', color = 'blue', label = r'$\langle PiD^i | Q_J\rangle$', markersize = 4, linewidth = 3 )
+  # ax[x,y].plot(imask, df['pide_QDi'], color = 'blue', label = r'$\langle PiD^e | Q_D^i\rangle$', markersize = 4, linewidth = 3 )
   ax[x,y].grid(which = 'both')
+  ax[x,y].set_xlim(0,0.020)
+  ax[x,y].set_ylim(-1e-7,2e-6)
+  ax[x,y].yaxis.get_offset_text().set_fontsize(30)
+  # ax2 = ax[y,x].twinx()
+  # ax2.plot(imask, df['QDi'], linestyle = 'dashed', color = 'black')
+  # ax2.plot(imask, df['Qwi'], linestyle = 'dashed', color = 'gray')
+  # ax2.set_ylabel('Counts')
+  # ax2.set_yscale('log')
   x = x + 1
   y = 0
-ax[0,0].legend(loc = 'upper left', fontsize = 13, title = r'$t \omega_{ci} = $'f'{np.round(twci[tsnap[0]],2)}', title_fontsize = tsize, frameon = False)
-ax[0,1].legend(loc = 'upper left', fontsize = 13, frameon = False)
+# import matplotlib as mpl
+# mpl.rcParams.update({'font.size': 25})
 
-ax[0,0].set_ylim(-2e-6, 5e-6)
-# ax[0,1].set_ylim(-1.5e-6, 2e-6)
-# ax[0,1].set_ylim(-1e-7, 2e-6)
-# ax[2,0].set_ylim(-3e-6, 2e-6)
 
-ax[-1,0].set_xlabel(r'$Q_J^e$', fontsize = 18)
-ax[-1,1].set_xlabel(r'$Q_J^i$', fontsize = 18)
+twcis = np.round(twci[tsnap],2)
+# subfigs[0,0].suptitle('asdf')
 
-fig.savefig(figs + 'QJ_thres.png', dpi = 200)
+ax[0,0].legend(loc = 'upper left', title = r'$t \omega_{ci} = 'f'{twcis[0]}$',title_fontsize = 40, fontsize = 30, frameon = False)
+ax[0,1].legend(loc = 'upper left',fontsize = 30, frameon = False)
+ax[0,0].tick_params(labelsize = 30)
+ax[1,0].tick_params(labelsize = 30)
+ax[2,0].tick_params(labelsize = 30)
+# ax[3,0].tick_params(labelsize = 30)
+
+ax[0,1].tick_params(labelsize = 30)
+ax[1,1].tick_params(labelsize = 30)
+ax[2,1].tick_params(labelsize = 30)
+
+
+
+ax[1,0].legend('', loc = 'upper left', title = r'$t \omega_{ci} = 'f'{twcis[1]}$',title_fontsize = 40, frameon = False)
+ax[2,0].legend('', loc = 'upper left', title = r'$t \omega_{ci} = 'f'{twcis[2]}$',title_fontsize = 40, frameon = False)
+# ax[3,1].tick_params(labelsize = 30)
+ax[0,0].set_title('electrons',fontsize = 40)
+ax[0,1].set_title('ions',fontsize = 40)
+ax[2,0].set_xlabel(r'$Q_{D,\omega}^e,Q_J$', fontsize = 40)
+ax[2,1].set_xlabel(r'$Q_{D,\omega}^i,Q_J$', fontsize = 40)
+
+fig.savefig(figs + 'Q_condAv.png', dpi = 200)
 fig.clf()

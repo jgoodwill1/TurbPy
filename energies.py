@@ -20,8 +20,12 @@ def read_energies(dirs):
   en_dict['Et'] = ene_tot
   return pd.DataFrame(en_dict)
 
-def read_calc_energies(dirs):
-  fdata = pd.read_csv(dirs + 'en_calc.csv')
+def read_calc_energies(dirs, filt = True):
+  if filt == True:
+    fdata = pd.read_csv(dirs + 'en_calc_fil.csv')
+  else:
+    fdata = pd.read_csv(dirs + 'en_calc.csv')
+  
 
   en_dict = {}
   en_dict['EE'] = fdata['EE']
@@ -59,7 +63,7 @@ def en_calc(dirs, filt = True,  save = True):
     if filt == False:
       ds = load_hydro(dirs,times[t], 'ion')
       f = load_fields(dirs,times[t])
-      E_m[t] = (1/2) * np.sum(f['cbx']**2 + f['cby']**2 + f['cbz']**2) * dx * dy *dz
+      E_m[t] = (1/2) * np.sum(f['cbx']**2 + f['cby']**2) * dx * dy *dz
       E_e[t] = (1/2) * np.sum(f['ex']**2 + f['ey']**2 + f['ez']**2) * dx * dy * dz
 
       particle_mass = int(vpic_info['mi/me'])
@@ -95,7 +99,7 @@ def en_calc(dirs, filt = True,  save = True):
     if filt == True:
       ds = load_hydro_fil(dirs,times[t], 'ion')
       f = load_field_fil(dirs,times[t])
-      E_m[t] = (1/2) * np.sum(f['cbx']**2 + f['cby']**2 + f['cbz']**2) * dx * dy *dz
+      E_m[t] = (1/2) * np.sum(f['cbx']**2 + f['cby']**2) * dx * dy *dz
       E_e[t] = (1/2) * np.sum(f['ex']**2 + f['ey']**2 + f['ez']**2) * dx * dy * dz
 
       particle_mass = int(vpic_info['mi/me'])

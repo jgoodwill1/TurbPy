@@ -28,7 +28,7 @@ lyr_de = np.linspace(0, ly_de, ny)
 dx = lx_de/nx
 dy = ly_de/ny
 
-tsnap = [373, 507, 652, 1120]
+tsnap = [363, 505, 657, 1110]
 x = 0
 y = 0
 fig, ax = plt.subplots(4,2, figsize = (10, 10), sharex = 'col', layout = 'tight')
@@ -47,7 +47,7 @@ for t in tsnap:
   QDi = tb.QD_calc(dirs, t, sp = 'ion')
 
   df = pd.DataFrame()
-  emask = np.linspace(0, 15, 50)
+  emask = np.linspace(0, 6, 50)
   Jie, JeE, JE = tb.JE_calc(dirs, times[t])
   pthe, pide = tb.ps_calc(dirs, times[t], 'electron')
   pthi, pidi = tb.ps_calc(dirs, times[t], 'ion')
@@ -93,7 +93,7 @@ ax[0,0].legend(loc = 'upper left', fontsize = 13, title = r'$t \omega_{ci} = $'f
 ax[0,1].legend(loc = 'upper left', fontsize = 13, frameon = False)
 
 ax[0,0].set_ylim(-0.5e-6, 2e-6)
-ax[0,1].set_ylim(-1.5e-6, 2e-6)
+ax[0,1].set_ylim(-1e-7, 2e-6)
 # ax[0,1].set_ylim(-1e-7, 2e-6)
 # ax[2,0].set_ylim(-3e-6, 2e-6)
 

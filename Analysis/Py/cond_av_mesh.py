@@ -43,8 +43,8 @@ for t in tsnap:
 
   QJe, QJi, QJ = tb.QJ_calc(dirs, t)
 
-  # QDe = tb.QD_calc(dirs, t, sp = 'electron')
-  # QDi = tb.QD_calc(dirs, t, sp = 'ion')
+  QDe = tb.QD_calc(dirs, t, sp = 'electron')
+  QDi = tb.QD_calc(dirs, t, sp = 'ion')
 
   df = pd.DataFrame()
   emask = np.linspace(0, 15, 50)
@@ -53,14 +53,14 @@ for t in tsnap:
   pthi, pidi = tb.ps_calc(dirs, times[t], 'ion')
   QDe_row = []
   tsize = 14
-  # ax[y,0].pcolormesh(QDe, vmin = 0, vmax = 15)
-  ax[y,0].pcolormesh(QJe, vmin = 0, vmax = 5)
+  ax[y,0].pcolormesh(QDe, vmin = 0, vmax = 15)
+  # ax[y,0].pcolormesh(QJe, vmin = 0, vmax = 5)
   ax[y,1].pcolormesh(pide, cmap = 'seismic', vmin = -1e-4, vmax = 1e-4)
-  # ax[y,2].pcolormesh(QDi, vmin = 0, vmax = 0.25)
-  ax[y,2].pcolormesh(QJi, vmin = 0, vmax = 0.5)
+  ax[y,2].pcolormesh(QDi[100:1180, :], vmin = 0, vmax = 0.3)
+  # ax[y,2].pcolormesh(QJi, vmin = 0, vmax = 0.5)
   ax[y,3].pcolormesh(pidi, cmap = 'seismic', vmin = -1e-5, vmax = 1e-5)
   y = y + 1
 
 
-fig.savefig(figs + 'QJ_mesh.png', dpi = 200)
+fig.savefig(figs + 'QD_mesh.png', dpi = 200)
 fig.clf()
