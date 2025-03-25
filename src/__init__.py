@@ -9,7 +9,7 @@ from .energies                    import *
 from .JE_calc                     import *
 from .plot                        import *
 from .interpolate                 import *
-from .xarray                      import *
+from .xar                      import *
 from .globals                     import *
 from .invariants                  import *
 from .spectrum                    import *
