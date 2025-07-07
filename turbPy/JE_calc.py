@@ -2,7 +2,6 @@ from .vpic_info import *
 from .load_vars import *
 import numpy as np
 import pandas as pd
-import xarray as xar
 
 def JE_calc(dirs, t, filt = True, save = True):
   vpic_info = get_vpic_info(dirs)

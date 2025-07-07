@@ -3,12 +3,16 @@ from Cython.Build import cythonize
 import numpy
 
 extensions = [
-    Extension("spectrum", ["src/spectrum.pyx"], include_dirs=[numpy.get_include()],
-        extra_compile_args=["-O2"]),
+    Extension(
+        name="turbPy.spectrum",
+        sources=["turbPy/spectrum.pyx"],
+        include_dirs=[numpy.get_include()],
+        extra_compile_args=["-std=c99"],
+    )
 ]
 
 setup(
-    name="TurbPy",
-    ext_modules=cythonize(extensions, language_level="3"),
-    zip_safe=False,
+    name="turbpy",
+    packages=["turbPy"],
+    ext_modules=cythonize(extensions),
 )
